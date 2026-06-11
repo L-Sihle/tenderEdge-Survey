@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TenderEdge – Market Research Survey</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0D1117; --ink-soft: #3A3F4B; --ink-muted: #7A8090;
+    --surface: #F7F8FA; --white: #FFFFFF;
+    --edge: #1A56DB; --edge-light: #EBF0FF; --edge-mid: #4B7BF5;
+    --success: #0E9F6E; --border: #E2E5EC; --radius: 10px;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--surface); color: var(--ink); min-height: 100vh; padding: 0 0 80px; }
+
+  /* Header */
+  .site-header { background: var(--ink); padding: 20px 32px; display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 32px; height: 32px; background: var(--edge); border-radius: 6px; display: grid; place-items: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; color: #fff; }
+  .logo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; color: #fff; letter-spacing: -0.3px; }
+
+  /* Hero */
+  .hero { background: var(--ink); padding: 48px 32px 56px; position: relative; overflow: hidden; }
+  .hero::after { content: ''; position: absolute; right: -60px; top: -60px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(26,86,219,0.25) 0%, transparent 70%); pointer-events: none; }
+  .hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--edge-mid); margin-bottom: 14px; }
+  .hero-title { font-family: 'Syne', sans-serif; font-size: clamp(28px, 5vw, 42px); font-weight: 800; line-height: 1.1; color: #fff; letter-spacing: -1px; margin-bottom: 18px; max-width: 560px; }
+  .hero-title span { color: var(--edge-mid); }
+  .hero-body { font-size: 15px; line-height: 1.65; color: rgba(255,255,255,0.65); max-width: 520px; }
+  .hero-meta { margin-top: 28px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .hero-pill { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 20px; padding: 6px 14px; font-size: 12px; color: rgba(255,255,255,0.7); display: flex; align-items: center; gap: 6px; }
+
+  /* Progress */
+  .progress-wrap { background: var(--white); border-bottom: 1px solid var(--border); padding: 14px 32px; position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px; }
+  .progress-label { font-size: 12px; font-weight: 600; color: var(--ink-muted); white-space: nowrap; min-width: 90px; }
+  .progress-bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; background: var(--edge); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+
+  /* Form */
+  .form-container { max-width: 700px; margin: 0 auto; padding: 48px 24px 0; }
+  .survey-section { margin-bottom: 48px; }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; padding-bottom: 16px; border-bottom: 2px solid var(--border); }
+  .section-number { width: 36px; height: 36px; flex-shrink: 0; background: var(--edge-light); border-radius: 8px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--edge); display: grid; place-items: center; }
+  .section-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; color: var(--ink); letter-spacing: -0.3px; }
+
+  .q-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px 24px 20px; margin-bottom: 16px; transition: border-color 0.2s; }
+  .q-card:focus-within { border-color: var(--edge); }
+  .q-label { font-size: 14px; font-weight: 600; color: var(--ink); line-height: 1.5; margin-bottom: 16px; }
+  .q-label .q-num { color: var(--edge); margin-right: 6px; }
+  .q-hint { font-size: 12px; color: var(--ink-muted); font-weight: 400; margin-left: 4px; }
+
+  /* Checkbox / Radio options */
+  .options-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; }
+  .options-grid.single-col { grid-template-columns: 1fr; }
+  .option-label { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--ink-soft); transition: all 0.15s; user-select: none; }
+  .option-label:hover { border-color: var(--edge-mid); background: var(--edge-light); }
+  .option-label input { accent-color: var(--edge); width: 15px; height: 15px; flex-shrink: 0; }
+  .option-label.selected { border-color: var(--edge); background: var(--edge-light); color: var(--ink); }
+
+  /* Per-category rating table */
+  #q2-container { display: none; margin-top: 4px; }
+  #q2-container.visible { display: block; }
+  .cat-rating-intro { font-size: 13px; color: var(--ink-muted); margin-bottom: 14px; }
+  .cat-rating-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .cat-rating-row:last-child { border-bottom: none; }
+  .cat-name { font-size: 13px; font-weight: 500; color: var(--ink); flex: 1; min-width: 160px; }
+  .mini-stars { display: flex; gap: 4px; }
+  .mini-star { background: none; border: none; cursor: pointer; font-size: 22px; color: var(--border); transition: color 0.12s, transform 0.1s; line-height: 1; }
+  .mini-star:hover, .mini-star.lit { color: #F59E0B; }
+  .mini-star:hover { transform: scale(1.2); }
+
+  /* Text inputs */
+  .text-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .text-field { flex: 1; min-width: 160px; }
+  .text-field label { display: block; font-size: 12px; font-weight: 500; color: var(--ink-muted); margin-bottom: 6px; }
+  .text-field input, .text-field textarea { width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; color: var(--ink); background: var(--surface); outline: none; transition: border-color 0.2s; }
+  .text-field input:focus, .text-field textarea:focus { border-color: var(--edge); background: var(--white); }
+  .text-field textarea { resize: vertical; min-height: 80px; }
+  .text-field input::placeholder, .text-field textarea::placeholder { color: var(--ink-muted); }
+
+  .other-input { margin-top: 10px; width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: 'Inter', sans-serif; color: var(--ink); display: none; outline: none; transition: border-color 0.2s; background: var(--surface); }
+  .other-input:focus { border-color: var(--edge); }
+  .other-input.visible { display: block; }
+
+  /* Submit */
+  .submit-wrap { text-align: center; padding: 8px 0 32px; }
+  .btn-submit { background: var(--edge); color: #fff; border: none; border-radius: 10px; padding: 16px 48px; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; cursor: pointer; transition: background 0.2s, transform 0.1s; display: inline-flex; align-items: center; gap: 10px; }
+  .btn-submit:hover { background: #1446C0; transform: translateY(-1px); }
+  .btn-submit:disabled { background: var(--ink-muted); cursor: not-allowed; transform: none; }
+
+  /* Sending overlay */
+  .sending-msg { font-size: 13px; color: var(--ink-muted); margin-top: 12px; min-height: 20px; text-align: center; }
+
+  /* Results */
+  #results-panel { display: none; max-width: 700px; margin: 0 auto; padding: 48px 24px; }
+  .results-hero { background: linear-gradient(135deg, var(--success) 0%, #0B7A57 100%); border-radius: 14px; padding: 32px; text-align: center; color: #fff; margin-bottom: 32px; }
+  .results-hero .check-icon { font-size: 40px; margin-bottom: 12px; }
+  .results-hero h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .results-hero p { font-size: 14px; opacity: 0.85; }
+  .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 32px; }
+  .result-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .result-card.full { grid-column: 1 / -1; }
+  .result-card-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 6px; }
+  .result-card-value { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: var(--ink); }
+  .result-card-value.small { font-size: 13px; }
+  .btn-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn-secondary { background: var(--white); color: var(--edge); border: 2px solid var(--edge); border-radius: 10px; padding: 12px 28px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-secondary:hover { background: var(--edge-light); }
+  .btn-primary-sm { background: var(--edge); color: #fff; border: 2px solid var(--edge); border-radius: 10px; padding: 12px 28px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+  .btn-primary-sm:hover { background: #1446C0; border-color: #1446C0; }
+
+  @media (max-width: 600px) {
+    .hero { padding: 36px 20px 44px; }
+    .progress-wrap { padding: 12px 20px; }
+    .form-container { padding: 32px 16px 0; }
+    .options-grid { grid-template-columns: 1fr; }
+    .results-grid { grid-template-columns: 1fr; }
+    .cat-rating-row { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo-mark">TE</div>
+  <span class="logo-name">TenderEdge</span>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Market Research Survey</div>
+  <h1 class="hero-title">Help us build the <span>future of tendering</span> in South Africa</h1>
+  <p class="hero-body">We're gathering data to identify real inefficiencies in the tender process and develop a solution that helps businesses submit more high-quality bids in less time. Your responses are confidential.</p>
+  <div class="hero-meta">
+    <div class="hero-pill">⏱️ ~5 minutes</div>
+    <div class="hero-pill">🔒 Confidential</div>
+    <div class="hero-pill">✅ 10 questions</div>
+  </div>
+</div>
+
+<div class="progress-wrap">
+  <span class="progress-label" id="progress-label">0 of 10</span>
+  <div class="progress-bar-track"><div class="progress-bar-fill" id="progress-fill"></div></div>
+</div>
+
+<div class="form-container" id="survey-form">
+
+  <!-- SECTION 1 -->
+  <div class="survey-section">
+    <div class="section-header">
+      <div class="section-number">1</div>
+      <div class="section-title">Experience &amp; Capacity</div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="q-card" data-q="1">
+      <div class="q-label"><span class="q-num">Q1.</span> Which procurement categories does your business tender in? <span class="q-hint">(select all that apply)</span></div>
+      <div class="options-grid" id="q1-options">
+        <label class="option-label"><input type="checkbox" name="q1" value="Services: Professional"> Services: Professional</label>
+        <label class="option-label"><input type="checkbox" name="q1" value="Services: General"> Services: General</label>
+        <label class="option-label"><input type="checkbox" name="q1" value="Supplies: General"> Supplies: General</label>
+        <label class="option-label"><input type="checkbox" name="q1" value="Other service activities"> Other service activities</label>
+        <label class="option-label"><input type="checkbox" name="q1" value="Construction"> Construction</label>
+        <label class="option-label"><input type="checkbox" name="q1" value="Services: Functional (incl. Cleaning)"> Services: Functional (incl. Cleaning)</label>
+        <label class="option-label"><input type="checkbox" name="q1" value="Administrative and support activities"> Administrative &amp; support activities</label>
+        <label class="option-label"><input type="checkbox" name="q1" value="Services: Electrical"> Services: Electrical</label>
+        <label class="option-label"><input type="checkbox" name="q1" value="Education"> Education</label>
+        <label class="option-label"><input type="checkbox" name="q1" value="Information and communication"> Information &amp; Communication</label>
+      </div>
+    </div>
+
+    <!-- Q2 — dynamic per-category ratings -->
+    <div class="q-card" data-q="2" id="q2-card">
+      <div class="q-label"><span class="q-num">Q2.</span> Rate your team's experience level in each selected category <span class="q-hint">(1 = Novice, 5 = Expert)</span></div>
+      <div id="q2-container">
+        <p class="cat-rating-intro">Select categories in Q1 first — ratings will appear here.</p>
+      </div>
+      <p id="q2-placeholder" style="font-size:13px;color:var(--ink-muted);">← Select your categories in Q1 to rate each one here.</p>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-card" data-q="3">
+      <div class="q-label"><span class="q-num">Q3.</span> On average, how many tenders/bids does your company submit?</div>
+      <div class="text-row">
+        <div class="text-field"><label>Per Month</label><input type="number" id="q3_month" placeholder="e.g. 4" min="0"></div>
+        <div class="text-field"><label>Per Year</label><input type="number" id="q3_year" placeholder="e.g. 48" min="0"></div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-card" data-q="4">
+      <div class="q-label"><span class="q-num">Q4.</span> What is your estimated win rate (percentage of submitted bids that are successful)?</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q4" value="0-10%"> 0–10%</label>
+        <label class="option-label"><input type="radio" name="q4" value="11-30%"> 11–30%</label>
+        <label class="option-label"><input type="radio" name="q4" value="31-50%"> 31–50%</label>
+        <label class="option-label"><input type="radio" name="q4" value="50%+"> 50%+</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="survey-section">
+    <div class="section-header">
+      <div class="section-number">2</div>
+      <div class="section-title">Process &amp; Bottlenecks</div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-card" data-q="5">
+      <div class="q-label"><span class="q-num">Q5.</span> How long does it take your team to compile a complete tender document from start to finish?</div>
+      <div class="options-grid">
+        <label class="option-label"><input type="radio" name="q5" value="Less than 3 days"> Less than 3 days</label>
+        <label class="option-label"><input type="radio" name="q5" value="3-7 days"> 3–7 days</label>
+        <label class="option-label"><input type="radio" name="q5" value="1-2 weeks"> 1–2 weeks</label>
+        <label class="option-label"><input type="radio" name="q5" value="Over 2 weeks"> Over 2 weeks</label>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-card" data-q="6">
+      <div class="q-label"><span class="q-num">Q6.</span> What are the limitations preventing you from submitting more bids on time? <span class="q-hint">(select all that apply)</span></div>
+      <div class="options-grid single-col">
+        <label class="option-label"><input type="checkbox" name="q6" value="Lack of personnel/capacity"> Lack of personnel / capacity</label>
+        <label class="option-label"><input type="checkbox" name="q6" value="Manual admin docs (CSD/Tax)"> Manual administrative documentation (CSD / Tax / etc.)</label>
+        <label class="option-label"><input type="checkbox" name="q6" value="Sourcing/formatting technical info"> Difficulty sourcing or formatting technical project info</label>
+        <label class="option-label"><input type="checkbox" name="q6" value="Time constraints on doc assembly"> Time constraints on document assembly</label>
+        <label class="option-label"><input type="checkbox" name="q6" value="Other"> Other</label>
+      </div>
+      <input type="text" class="other-input" id="q6-other" placeholder="Please describe…">
+    </div>
+
+    <!-- Q NEW — other obstacles -->
+    <div class="q-card" data-q="10">
+      <div class="q-label"><span class="q-num">Q7.</span> Are there any other obstacles you face in the tendering process that weren't mentioned above?</div>
+      <div class="text-field">
+        <textarea id="q_obstacles" placeholder="e.g. Difficulty understanding scoring criteria, BBBEE compliance complexity…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="survey-section">
+    <div class="section-header">
+      <div class="section-number">3</div>
+      <div class="section-title">Value &amp; Pricing</div>
+    </div>
+
+    <!-- Q7 → now Q8 -->
+    <div class="q-card" data-q="7">
+      <div class="q-label"><span class="q-num">Q8.</span> If you had an automated system to help compile your tender documents, how would it benefit you most?</div>
+      <div class="options-grid single-col">
+        <label class="option-label"><input type="radio" name="q7" value="Saves time"> Saves me time</label>
+        <label class="option-label"><input type="radio" name="q7" value="Saves consultant fees"> Saves money spent on external consultants / bid writers</label>
+        <label class="option-label"><input type="radio" name="q7" value="Increases win rate"> Increases my win rate by reducing errors</label>
+        <label class="option-label"><input type="radio" name="q7" value="Allows more bids per year"> Allows me to scale and submit more bids per year</label>
+        <label class="option-label"><input type="radio" name="q7" value="Other"> Other</label>
+      </div>
+      <input type="text" class="other-input" id="q7-other" placeholder="Please describe…">
+    </div>
+
+    <!-- Q8 → now Q9 -->
+    <div class="q-card" data-q="8">
+      <div class="q-label"><span class="q-num">Q9.</span> Would you pay for a solution that automates this workflow? If so, what is your preferred monthly budget?</div>
+      <div class="options-grid single-col">
+        <label class="option-label"><input type="radio" name="q8" value="Would not pay"> I would not pay</label>
+        <label class="option-label"><input type="radio" name="q8" value="R700–R1,000/month"> R700 – R1,000 / month</label>
+        <label class="option-label"><input type="radio" name="q8" value="R1,000–R1,500/month"> R1,000 – R1,500 / month</label>
+        <label class="option-label"><input type="radio" name="q8" value="R1,500–R2,000/month"> R1,500 – R2,000 / month</label>
+        <label class="option-label"><input type="radio" name="q8" value="R2,000+/month"> R2,000+ / month</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="survey-section">
+    <div class="section-header">
+      <div class="section-number">4</div>
+      <div class="section-title">Feedback &amp; Outreach</div>
+    </div>
+
+    <!-- Q9 → now Q10 -->
+    <div class="q-card" data-q="9">
+      <div class="q-label"><span class="q-num">Q10.</span> Would you like to receive a summary of these findings or be notified when we launch?</div>
+      <div class="text-row">
+        <div class="text-field"><label>Full Name</label><input type="text" id="q9_name" placeholder="Your name"></div>
+        <div class="text-field"><label>Email or Phone</label><input type="text" id="q9_contact" placeholder="email@company.co.za or 082…"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-wrap">
+    <button class="btn-submit" type="button" id="submit-btn" onclick="submitSurvey()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Submit responses
+    </button>
+    <div class="sending-msg" id="sending-msg"></div>
+  </div>
+</div>
+
+<!-- Results Panel -->
+<div id="results-panel">
+  <div class="results-hero">
+    <div class="check-icon">✅</div>
+    <h2>Thank you for your input!</h2>
+    <p id="results-subtext">Your responses have been recorded in Google Sheets.</p>
+  </div>
+  <div class="results-grid" id="results-grid"></div>
+  <div class="btn-actions">
+    <button class="btn-secondary" onclick="copyResults()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy to clipboard
+    </button>
+    <button class="btn-primary-sm" onclick="downloadCSV()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download as CSV
+    </button>
+  </div>
+</div>
+
+<script>
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvLw-frmW_8yL72SATTTPDdUD6nADPH1tNRELV5VVkUuvtPUaHb7_cp_41_tsNI9sL5g/exec';
+
+// ─────────────────────────────────────────────
+// Q1 categories & Q2 dynamic ratings
+// ─────────────────────────────────────────────
+const catRatings = {}; // { categoryName: starValue }
+
+function buildQ2Ratings() {
+  const selected = [...document.querySelectorAll('input[name="q1"]:checked')].map(i => i.value);
+  const container = document.getElementById('q2-container');
+  const placeholder = document.getElementById('q2-placeholder');
+
+  if (selected.length === 0) {
+    container.classList.remove('visible');
+    container.innerHTML = '';
+    placeholder.style.display = 'block';
+    // Remove ratings for deselected
+    Object.keys(catRatings).forEach(k => delete catRatings[k]);
+    updateProgress();
+    return;
+  }
+
+  placeholder.style.display = 'none';
+  container.classList.add('visible');
+
+  // Remove ratings for categories no longer selected
+  Object.keys(catRatings).forEach(k => { if (!selected.includes(k)) delete catRatings[k]; });
+
+  container.innerHTML = `<p class="cat-rating-intro">Rate your experience in each selected category (1 = Novice, 5 = Expert):</p>`;
+l
+  selected.forEach(cat => {
+    const existing = catRatings[cat] || 0;
+    const row = document.createElement('div');
+    row.className = 'cat-rating-row';
+    row.dataset.cat = cat;
+    let starsHtml = '';
+    for (let i = 1; i <= 5; i++) {
+      starsHtml += `<button class="mini-star ${i <= existing ? 'lit' : ''}" type="button" data-cat="${cat}" data-val="${i}" aria-label="${i} star">★</button>`;
+    }
+    row.innerHTML = `<span class="cat-name">${cat}</span><div class="mini-stars">${starsHtml}</div>`;
+    container.appendChild(row);
+  });
+
+  // Attach star click events
+  container.querySelectorAll('.mini-star').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.cat;
+      const val = parseInt(btn.dataset.val);
+      catRatings[cat] = val;
+      container.querySelectorAll(`.mini-star[data-cat="${CSS.escape(cat)}"]`).forEach(s => {
+        s.classList.toggle('lit', parseInt(s.dataset.val) <= val);
+      });
+      updateProgress();
+    });
+  });
+
+  updateProgress();
+}
+
+// Q1 checkboxes → rebuild Q2
+document.querySelectorAll('input[name="q1"]').forEach(inp => {
+  inp.addEventListener('change', () => {
+    inp.closest('.option-label').classList.toggle('selected', inp.checked);
+    buildQ2Ratings();
+  });
+});
+
+// ─────────────────────────────────────────────
+// Radio highlight
+// ─────────────────────────────────────────────
+document.querySelectorAll('.option-label input[type="radio"]').forEach(inp => {
+  inp.addEventListener('change', () => {
+    const grid = inp.closest('.options-grid');
+    grid.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected'));
+    inp.closest('.option-label').classList.add('selected');
+    updateProgress();
+  });
+});
+
+// ─────────────────────────────────────────────
+// Other toggles
+// ─────────────────────────────────────────────
+document.querySelectorAll('input[name="q6"]').forEach(inp => {
+  inp.addEventListener('change', () => {
+    inp.closest('.option-label').classList.toggle('selected', inp.checked);
+    const anyOther = [...document.querySelectorAll('input[name="q6"]:checked')].some(i => i.value === 'Other');
+    document.getElementById('q6-other').classList.toggle('visible', anyOther);
+    updateProgress();
+  });
+});
+document.querySelectorAll('input[name="q7"]').forEach(inp => {
+  inp.addEventListener('change', () => {
+    document.getElementById('q7-other').classList.toggle('visible', inp.value === 'Other');
+  });
+});
+
+// ─────────────────────────────────────────────
+// Progress
+// ─────────────────────────────────────────────
+const totalQ = 10;
+function answeredCount() {
+  let n = 0;
+  if (document.querySelector('input[name="q1"]:checked')) n++;
+  // Q2: at least one category rated
+  const selectedCats = [...document.querySelectorAll('input[name="q1"]:checked')].map(i => i.value);
+  if (selectedCats.length > 0 && selectedCats.every(c => catRatings[c])) n++;
+  if (document.getElementById('q3_month').value || document.getElementById('q3_year').value) n++;
+  if (document.querySelector('input[name="q4"]:checked')) n++;
+  if (document.querySelector('input[name="q5"]:checked')) n++;
+  if (document.querySelector('input[name="q6"]:checked')) n++;
+  if (document.getElementById('q_obstacles').value.trim()) n++;
+  if (document.querySelector('input[name="q7"]:checked')) n++;
+  if (document.querySelector('input[name="q8"]:checked')) n++;
+  if (document.getElementById('q9_name').value.trim() || document.getElementById('q9_contact').value.trim()) n++;
+  return n;
+}
+function updateProgress() {
+  const n = answeredCount();
+  document.getElementById('progress-label').textContent = `${n} of ${totalQ}`;
+  document.getElementById('progress-fill').style.width = `${(n / totalQ) * 100}%`;
+}
+document.getElementById('survey-form').addEventListener('input', updateProgress);
+
+// ─────────────────────────────────────────────
+// Collect data
+// ─────────────────────────────────────────────
+function collectData() {
+  const getRadio = name => { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : '—'; };
+  const cats = [...document.querySelectorAll('input[name="q1"]:checked')].map(i => i.value);
+  const catRatingsStr = cats.length ? cats.map(c => `${c}: ${catRatings[c] || '—'}/5`).join(' | ') : '—';
+  const q6vals = [...document.querySelectorAll('input[name="q6"]:checked')].map(i => i.value);
+  const q6other = document.getElementById('q6-other').value.trim();
+  const q6str = q6vals.length
+    ? q6vals.map(v => v === 'Other' && q6other ? `Other: ${q6other}` : v).join('; ')
+    : '—';
+  const q7val = getRadio('q7');
+  return {
+    'Categories': cats.join(', ') || '—',
+    'Category Ratings': catRatingsStr,
+    'Bids per Month': document.getElementById('q3_month').value || '—',
+    'Bids per Year': document.getElementById('q3_year').value || '—',
+    'Win Rate': getRadio('q4'),
+    'Time to Compile': getRadio('q5'),
+    'Primary Bottleneck': q6str,
+    'Other Obstacles': document.getElementById('q_obstacles').value.trim() || '—',
+    'Top Automation Benefit': q7val === 'Other' ? `Other: ${document.getElementById('q7-other').value.trim()}` : q7val,
+    'Monthly Budget': getRadio('q8'),
+    'Name': document.getElementById('q9_name').value.trim() || '—',
+    'Contact': document.getElementById('q9_contact').value.trim() || '—',
+  };
+}
+
+// ─────────────────────────────────────────────
+// Submit
+// ─────────────────────────────────────────────
+async function submitSurvey() {
+  const btn = document.getElementById('submit-btn');
+  const msg = document.getElementById('sending-msg');
+  const data = collectData();
+
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Submitting…';
+  msg.textContent = 'Saving your responses...';
+
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    showResults(data, true);
+  } catch (err) {
+    console.error(err);
+    msg.textContent = 'Submission failed.';
+    btn.disabled = false;
+  }
+}
+
+function showResults(data, emailSent) {
+  const grid = document.getElementById('results-grid');
+  grid.innerHTML = '';
+  const wideKeys = new Set(['Categories', 'Category Ratings', 'Other Obstacles']);
+  Object.entries(data).forEach(([label, value]) => {
+    const card = document.createElement('div');
+    card.className = 'result-card' + (wideKeys.has(label) ? ' full' : '');
+    card.innerHTML = `<div class="result-card-label">${label}</div><div class="result-card-value ${value.length > 25 ? "small" : ""}">${value}</div>`;
+    grid.appendChild(card);
+  });
+
+  if (!emailSent) {
+    document.getElementById('results-subtext').textContent =
+      '⚠️ Email sending requires EmailJS setup — see setup instructions below. Your responses are shown here and can be downloaded as CSV.';
+  }
+
+  document.getElementById('survey-form').style.display = 'none';
+  document.querySelector('.hero').style.display = 'none';
+  document.querySelector('.progress-wrap').style.display = 'none';
+  document.getElementById('results-panel').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window._surveyData = data;
+}
+
+// ─────────────────────────────────────────────
+// Copy & CSV
+// ─────────────────────────────────────────────
+function copyResults() {
+  const data = window._surveyData || collectData();
+  const text = Object.entries(data).map(([k, v]) => `${k}: ${v}`).join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.btn-secondary');
+    const orig = btn.innerHTML;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  });
+}
+function downloadCSV() {
+  const data = window._surveyData || collectData();
+  const headers = Object.keys(data).join(',');
+  const values = Object.values(data).map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
+  const csv = headers + '\n' + values;
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `tenderEdge_response_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
