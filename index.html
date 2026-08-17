@@ -321,9 +321,9 @@
 <script>
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvLw-frmW_8yL72SATTTPDdUD6nADPH1tNRELV5VVkUuvtPUaHb7_cp_41_tsNI9sL5g/exec';
 
-// ─────────────────────────────────────────────
+
 // Q1 categories & Q2 dynamic ratings
-// ─────────────────────────────────────────────
+
 const catRatings = {}; // { categoryName: starValue }
 
 function buildQ2Ratings() {
@@ -335,7 +335,7 @@ function buildQ2Ratings() {
     container.classList.remove('visible');
     container.innerHTML = '';
     placeholder.style.display = 'block';
-    // Remove ratings for deselected
+    
     Object.keys(catRatings).forEach(k => delete catRatings[k]);
     updateProgress();
     return;
@@ -385,10 +385,8 @@ document.querySelectorAll('input[name="q1"]').forEach(inp => {
     buildQ2Ratings();
   });
 });
-
-// ─────────────────────────────────────────────
+ 
 // Radio highlight
-// ─────────────────────────────────────────────
 document.querySelectorAll('.option-label input[type="radio"]').forEach(inp => {
   inp.addEventListener('change', () => {
     const grid = inp.closest('.options-grid');
@@ -398,9 +396,8 @@ document.querySelectorAll('.option-label input[type="radio"]').forEach(inp => {
   });
 });
 
-// ─────────────────────────────────────────────
 // Other toggles
-// ─────────────────────────────────────────────
+
 document.querySelectorAll('input[name="q6"]').forEach(inp => {
   inp.addEventListener('change', () => {
     inp.closest('.option-label').classList.toggle('selected', inp.checked);
@@ -415,9 +412,8 @@ document.querySelectorAll('input[name="q7"]').forEach(inp => {
   });
 });
 
-// ─────────────────────────────────────────────
+
 // Progress
-// ─────────────────────────────────────────────
 const totalQ = 10;
 function answeredCount() {
   let n = 0;
@@ -442,9 +438,8 @@ function updateProgress() {
 }
 document.getElementById('survey-form').addEventListener('input', updateProgress);
 
-// ─────────────────────────────────────────────
+
 // Collect data
-// ─────────────────────────────────────────────
 function collectData() {
   const getRadio = name => { const el = document.querySelector(`input[name="${name}"]:checked`); return el ? el.value : '—'; };
   const cats = [...document.querySelectorAll('input[name="q1"]:checked')].map(i => i.value);
@@ -471,9 +466,8 @@ function collectData() {
   };
 }
 
-// ─────────────────────────────────────────────
+
 // Submit
-// ─────────────────────────────────────────────
 async function submitSurvey() {
   const btn = document.getElementById('submit-btn');
   const msg = document.getElementById('sending-msg');
